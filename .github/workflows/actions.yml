@@ -36,7 +36,7 @@ jobs:
         run: npm ci && npm run build
         env:
           PUBLIC_URL: /maitake-pokedex
-          REACT_APP_DEX_RANGE: ${{ env.REACT_APP_DEX_RANGE }}
+          REACT_APP_DEX_RANGE: ${{ vars.REACT_APP_DEX_RANGE }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
