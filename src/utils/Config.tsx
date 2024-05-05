@@ -19,7 +19,7 @@ export type StatsList = {
 export type Chart = "bar" | "radar";
 
 // 表示するポケモンの数
-export const dexRange = 1025;
+export const dexRange = Number(process.env.REACT_APP_DEX_RANGE);
 
 // 表示する画像の種類
 export const imageList = [

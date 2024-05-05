@@ -3,14 +3,9 @@ import {
   AppBar, Toolbar,
   Typography, IconButton, Avatar
 } from "@mui/material";
+import { dexRange } from "../utils/Config";
 
-interface MainAppBarProps {
-  dexRange: number;
-}
-
-function MainAppBar({
-  dexRange
-}: MainAppBarProps): JSX.Element {
+function MainAppBar(): JSX.Element {
   return (
     <div>
       <AppBar position="static" color="inherit">

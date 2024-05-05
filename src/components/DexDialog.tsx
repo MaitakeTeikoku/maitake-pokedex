@@ -16,7 +16,7 @@ import {
   Close as CloseIcon
 } from "@mui/icons-material";
 import { useStateContext } from "../utils/StateContext";
-import { StatsList, Chart, imageList, typeNameList, languageList, dexRange } from "../utils/Config";
+import { StatsList, Chart, dexRange, imageList, typeNameList, languageList } from "../utils/Config";
 import ImageToggleButton from "./ImageToggleButton";
 import ChartToggleButton from "./ChartToggleButton";
 import RadarChart from "./RadarChart";

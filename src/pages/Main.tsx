@@ -76,9 +76,7 @@ function Main(): JSX.Element {
 
   return (
     <div>
-      <MainAppBar
-        dexRange={dexRange}
-      />
+      <MainAppBar />
 
       <Container maxWidth="xl"
         sx={{ my: 2 }}
