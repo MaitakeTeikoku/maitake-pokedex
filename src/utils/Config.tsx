@@ -3,8 +3,20 @@ import {
   Image as ImageIcon,
   Home as HomeIcon,
   CallMade as CallMadeIcon,
-  CallReceived as CallReceivedIcon
+  CallReceived as CallReceivedIcon,
+  BarChart as BarChartIcon,
+  Hexagon as HexagonIcon
 } from "@mui/icons-material";
+
+export type StatsList = {
+  h: number,
+  a: number,
+  b: number,
+  c: number,
+  d: number,
+  s: number,
+}
+export type Chart = "bar" | "radar";
 
 // 表示するポケモンの数
 export const dexRange = 1025;
@@ -27,7 +39,18 @@ export const imageList = [
     url: "/other/home",
     icon: <HomeIcon />
   }
+];
 
+// グラフの種類
+export const chartList: { name: Chart, icon: JSX.Element }[] = [
+  {
+    name: "bar",
+    icon: <BarChartIcon />
+  },
+  {
+    name: "radar",
+    icon: <HexagonIcon />
+  }
 ];
 
 // タイプ名の情報

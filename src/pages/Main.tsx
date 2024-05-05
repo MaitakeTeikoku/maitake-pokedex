@@ -72,7 +72,7 @@ function Main(): JSX.Element {
   return (
     <div>
       <Container maxWidth="xl"
-        sx={{ mt: 2 }}
+        sx={{ my: 2 }}
       >
         <Grid container
           spacing={1}
@@ -82,7 +82,7 @@ function Main(): JSX.Element {
           }}
         >
           <Grid item xs={8}>
-            <Typography variant="h4">
+            <Typography variant="h5">
               {"ポケモン図鑑"}
             </Typography>
           </Grid>

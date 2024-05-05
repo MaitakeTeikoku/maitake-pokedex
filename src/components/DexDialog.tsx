@@ -6,16 +6,20 @@ import {
   Card, CardMedia,
   FormControl, Select, MenuItem,
   IconButton,
+  DialogTitle
 } from "@mui/material";
 import {
+  CatchingPokemon as CatchingPokemonIcon,
   ArrowBack as ArrowBackIcon,
   ArrowForward as ArrowForwardIcon,
   Close as CloseIcon
 } from "@mui/icons-material";
 import { useStateContext } from "../utils/StateContext";
-import { imageList, typeNameList, languageList, dexRange } from "../utils/Config";
+import { StatsList, Chart, imageList, typeNameList, languageList, dexRange } from "../utils/Config";
 import ImageToggleButton from "./ImageToggleButton";
+import ChartToggleButton from "./ChartToggleButton";
 import RadarChart from "./RadarChart";
+import BarChart from "./BarChart";
 import Running from "./Running";
 
 type DexDialogProps = {
@@ -38,20 +42,30 @@ function DexDialog({
 
   // ダイアログに表示するポケモンの名前
   const [name, setName] = useState<string>("");
-  // ダイアログに表示するポケモンのタイプ番号のリスト
-  const [typeList, setTypeList] = useState<number[]>([]);
-  // ダイアログに表示するポケモンのフレーバーテキスト
-  const [flavorText, setFlavorText] = useState<string>("");
-  // ダイアログに表示するポケモンの属
-  const [genera, setGenera] = useState<string>("");
-  // ダイアログに表示するポケモンの種族値のリスト
-  const [statsList, setStatsList] = useState<number[]>([0, 0, 0, 0, 0, 0]);
+  // 表示する画像
+  const [imageNumber, setImageNumber] = useState<number>(0);
   // ダイアログに表示するポケモンを色違いにするか
   const [isShiny, setIsShiny] = useState<boolean>(false);
   // 言語設定
   const [languageCode, setLanguageCode] = useState<string>("ja");
-  // 表示する画像
-  const [imageNumber, setImageNumber] = useState<number>(0);
+  // ダイアログに表示するポケモンのタイプ番号のリスト
+  const [typeList, setTypeList] = useState<number[]>([]);
+  // ダイアログに表示するポケモンの属
+  const [genera, setGenera] = useState<string>("");
+  // 高さ
+  const [height, setHeight] = useState<number>(0);
+  // 重さ
+  const [weight, setWeight] = useState<number>(0);
+  // 伝説かどうか
+  const [isLegendary, setIsLegendary] = useState<boolean>(false);
+  // 幻かどうか
+  const [isMythical, setIsMythical] = useState<boolean>(false);
+  // ダイアログに表示するポケモンのフレーバーテキスト
+  const [flavorText, setFlavorText] = useState<string>("");
+  // ダイアログに表示するポケモンの種族値のリスト
+  const [statsList, setStatsList] = useState<StatsList>({ h: 0, a: 0, b: 0, c: 0, d: 0, s: 0 });
+  // グラフの種類
+  const [chart, setChart] = useState<Chart>("bar");
 
   // ダイアログに表示するポケモンの図鑑番号が変更されたとき
   useEffect(() => {
@@ -69,6 +83,7 @@ function DexDialog({
           throw new Error("ポケモンの名前取得失敗。");
         }
         const speciesData = await speciesResponse.json();
+
         // 選択した言語でのポケモン名を取得
         const languageName = speciesData.names.find((entry: any) => entry.language.name === languageCode);
         setName(languageName.name);
@@ -79,7 +94,6 @@ function DexDialog({
         const randomLanguageEntry = languageEntries[Math.floor(Math.random() * languageEntries.length)];
         // ランダムに選ばれたフレーバーテキストを取得
         const randomFlavorText = randomLanguageEntry?.flavor_text;
-
         // 「\n」「\f」を変換
         const convertedText = randomFlavorText
           ? randomFlavorText.split(/[\n\f]/).map((line: string, index: number) => (
@@ -94,6 +108,14 @@ function DexDialog({
         // 属を取得
         const languageGenera = speciesData.genera.find((entry: any) => entry.language.name === languageCode);
         setGenera(languageGenera?.genus);
+
+        // 伝説
+        const newLegendary = speciesData.is_legendary;
+        setIsLegendary(newLegendary);
+
+        // 幻
+        const newMythical = speciesData.is_mythical;
+        setIsMythical(newMythical);
 
         // PokeAPIのpokemonからデータを取得
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${dexNum}`);
@@ -111,13 +133,23 @@ function DexDialog({
         setTypeList(typeIdList);
 
         // 種族値を取得
-        const statNamesOrder = ["hp", "attack", "defense", "speed", "special-defense", "special-attack"];
-        const statsList: number[] = statNamesOrder.map((statName) => {
-          const statData = data.stats.find((stat: any) => stat.stat.name === statName);
-          return statData ? statData.base_stat : 0;
-        });
-        setStatsList(statsList);
+        const newStatsList: StatsList = {
+          h: data.stats.find((stat: any) => stat.stat.name === "hp")?.base_stat ?? 0,
+          a: data.stats.find((stat: any) => stat.stat.name === "attack")?.base_stat ?? 0,
+          b: data.stats.find((stat: any) => stat.stat.name === "defense")?.base_stat ?? 0,
+          c: data.stats.find((stat: any) => stat.stat.name === "special-attack")?.base_stat ?? 0,
+          d: data.stats.find((stat: any) => stat.stat.name === "special-defense")?.base_stat ?? 0,
+          s: data.stats.find((stat: any) => stat.stat.name === "speed")?.base_stat ?? 0
+        }
+        setStatsList(newStatsList);
 
+        // 高さ
+        const newHeight = data.height / 10;
+        setHeight(newHeight);
+
+        // 重さ
+        const newWeight = data.weight / 10;
+        setWeight(newWeight);
       } catch (error: unknown) {
         if (error instanceof Error) {
           createMessage(`${error.message}`, "error");
@@ -138,95 +170,166 @@ function DexDialog({
     return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon${url}${shiny}/${dexNum}.png`;
   }, [imageNumber, isShiny, dexNum]);
 
+  // 合計種族値
+  const totalStats = useMemo(() => {
+    return Object.values(statsList).reduce((a, b) => a + b, 0);
+  }, [statsList]);
+
   return (
     <Dialog
       open={isDialogOpen}
       onClose={() => setIsDialogOpen(false)}
     >
+      <DialogTitle>
+        {name}
+      </DialogTitle>
       <DialogContent>
         <Grid container
           spacing={1}
-          sx={{
-            justifyContent: "center",
-            alignItems: "center",
-            textAlign: "center",
-          }}
         >
-          <Grid item xs={12}
-            sx={{ mt: 1 }}
-          >
-            <Typography variant="h5">{name}</Typography>
-          </Grid>
-
-          <Grid item xs={12}
-            sx={{ mt: 1 }}
-          >
-            <ImageToggleButton
-              imageNumber={imageNumber}
-              setImageNumber={setImageNumber}
-              isShiny={isShiny}
-              setIsShiny={setIsShiny}
-            />
-          </Grid>
-        </Grid>
-
-        <Card>
-          <CardMedia
-            component="img"
-            image={imageUrl}
-            alt={`${dexNum}`}
-          />
-        </Card>
-
-        <Grid container
-          spacing={1}
-          alignItems="center"
-          sx={{ mt: 1 }}
-        >
-          <Grid item xs={8}>
-            <FormControl>
-              <Select
-                value={languageCode}
-                onChange={(event) => setLanguageCode(event.target.value)}
+          <Grid item xs={12} md={6}>
+            <Grid container
+              spacing={1}
+              sx={{
+                alignItems: "center"
+              }}
+            >
+              <Grid item xs={4}>
+                <Typography variant="h6">
+                  {`No.${dexNum}`}
+                </Typography>
+              </Grid>
+              <Grid item xs={4}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between"
+                }}
               >
-                {languageList.map((language, index) => (
-                  <MenuItem
-                    key={index}
-                    value={language.code}
-                  >
-                    {language.display}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+                {(isMythical || isLegendary) && (
+                  <CatchingPokemonIcon
+                    color={
+                      isMythical
+                        ? "error"
+                        : isLegendary
+                          ? "inherit"
+                          : "disabled"
+                    }
+                  />
+                )}
+              </Grid>
+              {typeList.map((type, index) => (
+                <Grid item key={index} xs={2}>
+                  <CardMedia
+                    component="img"
+                    image={`${process.env.PUBLIC_URL}/img/icon_type/icon_type_${type}.svg`}
+                    alt={`${type}`}
+                  />
+                </Grid>
+              ))}
 
-          {typeList.map((type, index) => (
-            <Grid item key={index} xs={2}>
+              <Grid item xs={12}>
+                <ImageToggleButton
+                  imageNumber={imageNumber}
+                  setImageNumber={setImageNumber}
+                  isShiny={isShiny}
+                  setIsShiny={setIsShiny}
+                />
+              </Grid>
+            </Grid>
+
+            <Card>
               <CardMedia
                 component="img"
-                image={`${process.env.PUBLIC_URL}/img/icon_type/icon_type_${type}.svg`}
-                alt={`${type}`}
+                image={imageUrl}
+                alt={`${dexNum}`}
               />
-            </Grid>
-          ))}
+            </Card>
+          </Grid>
 
-          <Grid item xs={3}>
-            <Typography variant="subtitle1">No.{dexNum}</Typography>
-          </Grid>
-          <Grid item xs={9}>
-            <Typography variant="subtitle1">{genera}</Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="caption">
-              {flavorText}
-            </Typography>
+          <Grid item xs={12} md={6}>
+            <Grid container
+              spacing={1}
+              alignItems="center"
+            >
+              <Grid item xs={3}>
+                <Typography>
+                  {"種族値"}
+                </Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography>
+                  {`${totalStats}`}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}
+                sx={{ textAlign: "end" }}
+              >
+                <ChartToggleButton
+                  chart={chart}
+                  setChart={setChart}
+                />
+              </Grid>
+            </Grid>
+
+            {chart === "bar" && (
+              <BarChart
+                data={statsList}
+              />
+            )}
+
+            {chart === "radar" && (
+              <RadarChart
+                data={statsList}
+              />
+            )}
+
+            <Grid container
+              spacing={1}
+              alignItems="center"
+            >
+              <Grid item xs={6}>
+                <Typography>
+                  {`高さ: ${height.toFixed(1)} m`}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography>
+                  {`重さ: ${weight.toFixed(1)} kg`}
+                </Typography>
+              </Grid>
+
+              <Grid item xs={8}>
+                <FormControl>
+                  <Select
+                    value={languageCode}
+                    onChange={(event) => setLanguageCode(event.target.value)}
+                  >
+                    {languageList.map((language, index) => (
+                      <MenuItem
+                        key={index}
+                        value={language.code}
+                      >
+                        {language.display}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={9}>
+                <Typography>
+                  {genera}
+                </Typography>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Typography variant="caption">
+                  {flavorText}
+                </Typography>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
-
-        <RadarChart
-          data={statsList}
-        />
       </DialogContent>
 
       <DialogActions sx={{ justifyContent: "space-between" }}>

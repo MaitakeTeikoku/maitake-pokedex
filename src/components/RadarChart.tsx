@@ -1,45 +1,47 @@
 import Chart from "react-apexcharts";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { StatsList } from "../utils/Config";
 
 type RadarChartProps = {
-  data: number[];
+  data: StatsList;
 }
 
 function RadarChart({
   data
 }: RadarChartProps): JSX.Element {
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  const statsOrder: (keyof StatsList)[] = ["h", "a", "b", "s", "d", "c"];
+
   const series = [
     {
-      data: data,
+      name: "種族値",
+      data: statsOrder.map((key) => data[key])
     },
   ];
-
   const options = {
     chart: {
-      id: "radar-chart",
       toolbar: {
-        show: false,
+        show: false
       },
     },
+    theme: {
+      mode: prefersDarkMode ? "dark" : "light" as "dark" | "light",
+    },
     xaxis: {
-      categories: ["HP", "こうげき", "ぼうぎょ", "すばやさ", "とくぼう", "とくこう"],
+      categories: ["HP", "こうげき", "ぼうぎょ", "すばやさ", "とくぼう", "とくこう"]
     },
     yaxis: {
-      max: 255,
+      max: 200,
       min: 0,
-      show: false,
+      show: false
     },
     fill: {
-      opacity: 0.5,
-    },
-    markers: {
-      size: 0,
-    },
+      opacity: 0.8
+    }
   };
 
   return (
-    <div>
-      <Chart series={series} options={options} type="radar" />
-    </div>
+    <Chart series={series} options={options} type="radar" />
   );
 }
 
