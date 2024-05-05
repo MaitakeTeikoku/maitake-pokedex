@@ -1,4 +1,5 @@
 import {
+  Tooltip,
   ToggleButtonGroup, ToggleButton
 } from "@mui/material";
 import { Chart, chartList } from "../utils/Config";
@@ -30,12 +31,16 @@ function ChartToggleButton({
       color="primary"
     >
       {chartList.map((chart) => (
-        <ToggleButton
-        key={chart.name}
-        value={chart.name}
+        <Tooltip arrow
+          title={chart.name}
         >
-          {chart.icon}
-        </ToggleButton>
+          <ToggleButton
+            key={chart.id}
+            value={chart.id}
+          >
+            {chart.icon}
+          </ToggleButton>
+        </Tooltip>
       ))}
     </ToggleButtonGroup>
   );

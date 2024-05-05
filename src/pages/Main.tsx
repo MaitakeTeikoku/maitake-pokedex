@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import {
   Container, Grid,
-  Typography,
+  Tooltip,
   Stack, Slider,
   Card, CardActionArea, CardMedia
 } from "@mui/material";
@@ -10,6 +10,7 @@ import {
   Grid4x4 as Grid4x4Icon
 } from "@mui/icons-material";
 import { dexRange } from "../utils/Config";
+import MainAppBar from "../components/MainAppBar";
 import DexDialog from "../components/DexDialog";
 
 function Main(): JSX.Element {
@@ -35,9 +36,13 @@ function Main(): JSX.Element {
       dexList.push(
         <Grid item key={i} xs={1}>
           <Card>
-            <CardActionArea onClick={() => handleCardClick(i)}>
-              <CardMedia component="img" image={imageUrl} alt={`${i}`} />
-            </CardActionArea>
+            <Tooltip arrow
+              title={`${i}`}
+            >
+              <CardActionArea onClick={() => handleCardClick(i)}>
+                <CardMedia component="img" image={imageUrl} alt={`${i}`} />
+              </CardActionArea>
+            </Tooltip>
           </Card>
         </Grid>
       );
@@ -71,33 +76,13 @@ function Main(): JSX.Element {
 
   return (
     <div>
+      <MainAppBar
+        dexRange={dexRange}
+      />
+
       <Container maxWidth="xl"
         sx={{ my: 2 }}
       >
-        <Grid container
-          spacing={1}
-          sx={{
-            mt: 2,
-            alignItems: "end"
-          }}
-        >
-          <Grid item xs={8}>
-            <Typography variant="h5">
-              {"ポケモン図鑑"}
-            </Typography>
-          </Grid>
-
-          <Grid item xs={4}
-            sx={{
-              textAlign: "end"
-            }}
-          >
-            <Typography>
-              {dexRange}匹
-            </Typography>
-          </Grid>
-        </Grid>
-
         <Grid container
           spacing={1}
           sx={{
@@ -108,23 +93,27 @@ function Main(): JSX.Element {
           }}
         >
           <Grid item xs={12}>
-            <Stack
-              spacing={2}
-              direction="row"
-              alignItems="center"
+            <Tooltip arrow
+              title="列数"
             >
-              <Grid3x3Icon />
-              <Slider
-                value={listRowNum}
-                onChange={(event, value) => event && setListRowNum(value as number)}
-                valueLabelDisplay="auto"
-                marks={marks}
-                step={null}
-                min={4}
-                max={20}
-              />
-              <Grid4x4Icon />
-            </Stack>
+              <Stack
+                spacing={2}
+                direction="row"
+                alignItems="center"
+              >
+                <Grid3x3Icon />
+                <Slider
+                  value={listRowNum}
+                  onChange={(event, value) => event && setListRowNum(value as number)}
+                  valueLabelDisplay="auto"
+                  marks={marks}
+                  step={null}
+                  min={4}
+                  max={20}
+                />
+                <Grid4x4Icon />
+              </Stack>
+            </Tooltip>
           </Grid>
         </Grid>
 

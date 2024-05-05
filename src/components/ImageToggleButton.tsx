@@ -2,6 +2,7 @@ import { styled } from '@mui/material/styles';
 import {
   toggleButtonGroupClasses,
   Paper,
+  Tooltip,
   ToggleButtonGroup, ToggleButton, Divider
 } from "@mui/material";
 import {
@@ -64,13 +65,17 @@ function ImageToggleButton({
         color="primary"
       >
         {imageList.map((image, index) => (
-          <ToggleButton
-            key={index}
-            value={index}
-            disabled={index === imageNumber}
+          <Tooltip arrow
+            title={`${image.name}`}
           >
-            {image.icon}
-          </ToggleButton>
+            <ToggleButton
+              key={index}
+              value={index}
+              disabled={index === imageNumber}
+            >
+              {image.icon}
+            </ToggleButton>
+          </Tooltip>
         ))}
       </StyledToggleButtonGroup>
 
@@ -81,13 +86,17 @@ function ImageToggleButton({
         size="small"
         color="secondary"
       >
-        <ToggleButton
-          value="check"
-          selected={isShiny}
-          onChange={() => setIsShiny(!isShiny)}
+        <Tooltip arrow
+          title={`色違いを${isShiny ? "オフ" : "オン"}にする`}
         >
-          <AutoAwesomeIcon />
-        </ToggleButton>
+          <ToggleButton
+            value="check"
+            selected={isShiny}
+            onChange={() => setIsShiny(!isShiny)}
+          >
+            <AutoAwesomeIcon />
+          </ToggleButton>
+        </Tooltip>
       </StyledToggleButtonGroup>
     </Paper>
   );

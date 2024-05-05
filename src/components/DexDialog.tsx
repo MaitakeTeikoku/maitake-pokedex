@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {
   Grid,
+  Tooltip,
   Dialog, DialogContent, DialogActions,
   Typography,
   Card, CardMedia,
@@ -206,24 +207,36 @@ function DexDialog({
                 }}
               >
                 {(isMythical || isLegendary) && (
-                  <CatchingPokemonIcon
-                    color={
-                      isMythical
-                        ? "error"
-                        : isLegendary
-                          ? "inherit"
-                          : "disabled"
-                    }
-                  />
+                  <Tooltip arrow
+                    title={isMythical
+                      ? "幻"
+                      : isLegendary
+                        ? "伝説"
+                        : ""}
+                  >
+                    <CatchingPokemonIcon
+                      color={
+                        isMythical
+                          ? "error"
+                          : isLegendary
+                            ? "inherit"
+                            : "disabled"
+                      }
+                    />
+                  </Tooltip>
                 )}
               </Grid>
               {typeList.map((type, index) => (
                 <Grid item key={index} xs={2}>
-                  <CardMedia
-                    component="img"
-                    image={`${process.env.PUBLIC_URL}/img/icon_type/icon_type_${type}.svg`}
-                    alt={`${type}`}
-                  />
+                  <Tooltip arrow
+                    title={`${typeNameList.find(typeName => typeName.id === type)?.nameJp}`}
+                  >
+                    <CardMedia
+                      component="img"
+                      image={`${process.env.PUBLIC_URL}/img/icon_type/icon_type_${type}.svg`}
+                      alt={`${type}`}
+                    />
+                  </Tooltip>
                 </Grid>
               ))}
 
@@ -238,11 +251,15 @@ function DexDialog({
             </Grid>
 
             <Card>
-              <CardMedia
-                component="img"
-                image={imageUrl}
-                alt={`${dexNum}`}
-              />
+              <Tooltip arrow
+                title={`${name}`}
+              >
+                <CardMedia
+                  component="img"
+                  image={imageUrl}
+                  alt={`${dexNum}`}
+                />
+              </Tooltip>
             </Card>
           </Grid>
 
@@ -333,28 +350,40 @@ function DexDialog({
       </DialogContent>
 
       <DialogActions sx={{ justifyContent: "space-between" }}>
-        <IconButton
-          onClick={() => setDexNum(dexNum - 1)}
-          disabled={dexNum <= 1}
-          color="primary"
+        <Tooltip arrow
+          title="戻る"
         >
-          <ArrowBackIcon />
-        </IconButton>
+          <IconButton
+            onClick={() => setDexNum(dexNum - 1)}
+            disabled={dexNum <= 1}
+            color="primary"
+          >
+            <ArrowBackIcon />
+          </IconButton>
+        </Tooltip>
 
-        <IconButton
-          onClick={() => setIsDialogOpen(false)}
-          color="inherit"
+        <Tooltip arrow
+          title="閉じる"
         >
-          <CloseIcon />
-        </IconButton>
+          <IconButton
+            onClick={() => setIsDialogOpen(false)}
+            color="inherit"
+          >
+            <CloseIcon />
+          </IconButton>
+        </Tooltip>
 
-        <IconButton
-          onClick={() => setDexNum(dexNum + 1)}
-          disabled={dexNum >= dexRange}
-          color="primary"
+        <Tooltip arrow
+          title="進む"
         >
-          <ArrowForwardIcon />
-        </IconButton>
+          <IconButton
+            onClick={() => setDexNum(dexNum + 1)}
+            disabled={dexNum >= dexRange}
+            color="primary"
+          >
+            <ArrowForwardIcon />
+          </IconButton>
+        </Tooltip>
       </DialogActions>
 
       <Running />
