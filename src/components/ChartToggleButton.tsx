@@ -32,10 +32,10 @@ function ChartToggleButton({
     >
       {chartList.map((chart) => (
         <Tooltip arrow
+          key={chart.id}
           title={chart.name}
         >
           <ToggleButton
-            key={chart.id}
             value={chart.id}
           >
             {chart.icon}

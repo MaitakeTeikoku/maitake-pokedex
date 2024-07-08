@@ -66,10 +66,10 @@ function ImageToggleButton({
       >
         {imageList.map((image, index) => (
           <Tooltip arrow
+            key={index}
             title={`${image.name}`}
           >
             <ToggleButton
-              key={index}
               value={index}
               disabled={index === imageNumber}
             >
