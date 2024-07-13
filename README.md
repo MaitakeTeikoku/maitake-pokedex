@@ -16,7 +16,6 @@
     ```bash
     npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
     npm install react-apexcharts apexcharts
-    npm install ogv
     ```
 1. Reactのpackage.jsonの2行目に以下を追記。
     ```json
