@@ -188,7 +188,7 @@ function DexDialog({
         source.connect(audioContext.destination);
         source.start(0);
       })
-      .catch(error => createMessage("ご利用のブラウザはOGGファイルに対応していません。", "error"));
+      .catch(error => createMessage("ご利用のブラウザはOGGファイルの再生に対応していません。", "error"));
   };
 
   return (
