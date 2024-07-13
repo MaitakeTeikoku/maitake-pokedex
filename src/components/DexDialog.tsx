@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import {
   CatchingPokemon as CatchingPokemonIcon,
+  VolumeUp as VolumeUpIcon,
   ArrowBack as ArrowBackIcon,
   ArrowForward as ArrowForwardIcon,
   Close as CloseIcon
@@ -176,6 +177,20 @@ function DexDialog({
     return Object.values(statsList).reduce((a, b) => a + b, 0);
   }, [statsList]);
 
+  const playCries = () => {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    fetch(`https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${dexNum}.ogg`)
+      .then(response => response.arrayBuffer())
+      .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+      .then(audioBuffer => {
+        const source = audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(audioContext.destination);
+        source.start(0);
+      })
+      .catch(error => createMessage("ご利用のブラウザはOGGファイルに対応していません。", "error"));
+  };
+
   return (
     <Dialog
       open={isDialogOpen}
@@ -315,7 +330,7 @@ function DexDialog({
                 </Typography>
               </Grid>
 
-              <Grid item xs={8}>
+              <Grid item xs={10}>
                 <FormControl>
                   <Select
                     value={languageCode}
@@ -332,8 +347,16 @@ function DexDialog({
                   </Select>
                 </FormControl>
               </Grid>
+              <Grid item xs={2}>
+                <IconButton
+                  onClick={playCries}
+                  color="primary"
+                >
+                  <VolumeUpIcon />
+                </IconButton>
+              </Grid>
 
-              <Grid item xs={9}>
+              <Grid item xs={12}>
                 <Typography>
                   {genera}
                 </Typography>
